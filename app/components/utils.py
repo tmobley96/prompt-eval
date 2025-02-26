@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain_core.language_models import BaseChatModel
 from langchain_core.prompts import PromptTemplate, ChatPromptTemplate
-from langchain_core.output_parsers import OutputParserException
+from langchain_core.exceptions import OutputParserException
 from pydantic import BaseModel, ValidationError
 
 # Configure logging
