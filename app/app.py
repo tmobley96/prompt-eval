@@ -91,7 +91,7 @@ def render_prompt_input():
             if st.button(f"Example {i+1}", key=f"example_{i}", use_container_width=True):
                 prompt = example
                 st.session_state.current_prompt = example
-                st.experimental_rerun()
+                st.rerun()
     
     col1, col2 = st.columns([1, 4])
     with col1:
@@ -346,7 +346,7 @@ def render_history():
                     st.session_state.current_analysis = entry["analysis"]
                     st.session_state.current_improvement = entry["improvement"]
                     st.session_state.current_comparison = entry["comparison"]
-                    st.experimental_rerun()
+                    st.rerun()
 
 def render_error():
     """Render error message if present."""
@@ -354,7 +354,7 @@ def render_error():
         st.error(st.session_state.error)
         if st.button("Clear Error"):
             st.session_state.error = None
-            st.experimental_rerun()
+            st.rerun()
 
 # Process functions
 def process_prompt(prompt: str):
@@ -454,7 +454,7 @@ def main():
     if analyze_button and prompt:
         st.session_state.current_prompt = prompt
         process_prompt(prompt)
-        st.experimental_rerun()
+        st.rerun()
     
     # Render result tabs
     render_tabs()
