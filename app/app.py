@@ -18,7 +18,7 @@ import os
 from components.analyzer import PromptAnalyzer, PromptAnalysis
 from components.improver import PromptImprover, ImprovedPrompt
 from components.evaluator import PromptEvaluator, PromptComparison
-from components.utils import load_env_vars, AppError
+from components.utils import load_env_vars, AppError, is_free_tier_user, check_free_tier_limit, increment_free_tier_usage
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -71,6 +71,51 @@ def render_header():
     st.title(APP_TITLE)
     st.markdown(APP_DESCRIPTION)
     st.divider()
+    
+    # Add sidebar for API key and free tier information
+    with st.sidebar:
+        st.header("Settings")
+        
+        # API Key input
+        api_key_input = st.text_input(
+            "OpenAI API Key (optional)",
+            value=st.session_state.get("user_api_key", ""),
+            type="password",
+            help="Provide your own OpenAI API key to use the application without limits. Leave blank to use the free tier."
+        )
+        
+        # Update session state with API key
+        if api_key_input:
+            st.session_state.user_api_key = api_key_input
+        elif "user_api_key" in st.session_state:
+            # Clear API key if input is empty
+            del st.session_state.user_api_key
+        
+        # Display free tier information
+        env_vars = load_env_vars()
+        daily_limit = env_vars["FREE_TIER_DAILY_LIMIT"]
+        
+        if is_free_tier_user():
+            st.markdown("### Free Tier")
+            
+            # Get today's usage
+            today = datetime.now().strftime("%Y-%m-%d")
+            if "free_tier_usage" not in st.session_state:
+                st.session_state.free_tier_usage = {}
+            
+            if today not in st.session_state.free_tier_usage:
+                st.session_state.free_tier_usage[today] = 0
+                
+            current_usage = st.session_state.free_tier_usage.get(today, 0)
+            
+            # Display usage
+            st.progress(min(1.0, current_usage / daily_limit))
+            st.text(f"Usage: {current_usage}/{daily_limit} prompts today")
+            
+            if not check_free_tier_limit():
+                st.warning("You've reached the free tier limit for today. Please provide your API key to continue.")
+        else:
+            st.success("Using your own API key - no usage limits!")
 
 def render_prompt_input():
     """Render the prompt input section."""
@@ -364,6 +409,14 @@ def process_prompt(prompt: str):
     Args:
         prompt: The prompt to analyze and improve
     """
+    # Load environment variables and check free tier limit
+    env_vars = load_env_vars()
+    
+    # Check free tier usage if applicable
+    if is_free_tier_user() and not check_free_tier_limit():
+        st.session_state.error = "You've reached the free tier limit for today. Please provide your API key to continue."
+        return
+    
     try:
         st.session_state.processing = True
         st.session_state.error = None
@@ -388,6 +441,10 @@ def process_prompt(prompt: str):
         
         # Step 4: Save to history
         save_to_history(prompt, analysis, improvement, comparison)
+        
+        # Increment usage counter for free tier
+        if is_free_tier_user():
+            increment_free_tier_usage()
         
     except AppError as e:
         logger.error(f"Application error: {e.message}")
