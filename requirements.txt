@@ -15,4 +15,9 @@ flake8==7.0.0
 pre-commit==3.6.0
 langchain-community==0.0.16
 langchain-core==0.1.18
-langsmith==0.0.83 
+langsmith==0.0.83
+# Adding explicit versions for dependencies that were causing issues
+markdown-it-py==3.0.0
+pygments==2.16.1
+mdurl==0.1.2
+rich==13.6.0 
