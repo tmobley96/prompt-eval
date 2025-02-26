@@ -1,24 +1,26 @@
 streamlit==1.32.0
+langchain==0.1.10
 langchain-core==0.1.31
 langchain-community==0.0.28
 langsmith==0.1.0
 langchain-openai==0.0.5
-pydantic==2.6.3
-pydantic-v1==1.10.13
+# Pydantic v2 - compatible with LangChain 0.1.x
+pydantic>=2.0.0,<3.0.0
+pydantic-core>=2.16.3
 python-dotenv==1.0.0
 typing-extensions==4.9.0
 pandas==2.1.4
 matplotlib==3.8.2
 plotly==5.18.0
+# Development dependencies
 mypy==1.8.0
 pytest==7.4.3
 black==23.12.1
 isort==5.13.2
 flake8==7.0.0
 pre-commit==3.6.0
+# Rich console formatting
 markdown-it-py==3.0.0
 pygments==2.16.1
 mdurl==0.1.2
-rich==13.6.0
-# Installing langchain last to ensure its dependencies are already installed
-langchain==0.1.10 
+rich==13.6.0 
