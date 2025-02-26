@@ -4,6 +4,7 @@ langchain-community==0.0.28
 langsmith==0.1.0
 langchain-openai==0.0.5
 pydantic==2.6.3
+pydantic-v1==1.10.13
 python-dotenv==1.0.0
 typing-extensions==4.9.0
 pandas==2.1.4
